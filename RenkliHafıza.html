@@ -1,0 +1,1865 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Renkli Hafıza | Arduino Projesi</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bg: #080b12;
+    --panel: #111827;
+    --text: #f5f7ff;
+    --muted: #9ba6bd;
+    --cyan: #00e5ff;
+    --purple: #9b5cff;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 15% 15%, #14233e 0, transparent 35%),
+        radial-gradient(circle at 85% 80%, #21143d 0, transparent 35%),
+        var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.page {
+    display: none;
+    min-height: 100vh;
+}
+
+.page.active {
+    display: block;
+}
+
+.container {
+    width: min(1100px, 92%);
+    margin: auto;
+}
+
+header {
+    padding: 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    font-size: 21px;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+.logo span {
+    color: white;
+}
+
+.home-content {
+    min-height: 75vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.tag {
+    border: 1px solid #00e5ff55;
+    color: var(--cyan);
+    background: #00e5ff10;
+    border-radius: 30px;
+    padding: 9px 17px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+}
+
+.home-content h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(35px, 7vw, 75px);
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.home-content h1 span {
+    color: var(--cyan);
+    text-shadow: 0 0 30px #00e5ff55;
+}
+
+.home-content p {
+    max-width: 650px;
+    color: var(--muted);
+    line-height: 1.8;
+    font-size: 16px;
+    margin-bottom: 35px;
+}
+
+.home-buttons {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.main-btn {
+    border: 0;
+    padding: 17px 27px;
+    border-radius: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    transition: .2s;
+}
+
+.main-btn:hover {
+    transform: translateY(-4px);
+}
+
+.primary {
+    background: var(--cyan);
+    color: #061018;
+    box-shadow: 0 0 25px #00e5ff44;
+}
+
+.secondary {
+    background: #182235;
+    color: white;
+    border: 1px solid #34445f;
+}
+
+.back-btn {
+    background: #1b2639;
+    color: white;
+    border: 1px solid #35435b;
+    padding: 10px 16px;
+    border-radius: 9px;
+}
+
+.section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(25px, 4vw, 38px);
+    margin: 30px 0 15px;
+}
+
+.section-title span {
+    color: var(--cyan);
+}
+
+.section-description {
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 25px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 17px;
+    margin: 25px 0;
+}
+
+.info-card {
+    background: linear-gradient(145deg, #172236, #101725);
+    border: 1px solid #283750;
+    border-radius: 15px;
+    padding: 23px;
+}
+
+.info-card h3 {
+    color: var(--cyan);
+    margin-bottom: 12px;
+    font-size: 17px;
+}
+
+.info-card p, .info-card li {
+    color: var(--muted);
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.info-card ul {
+    padding-left: 18px;
+}
+
+footer {
+    text-align: center;
+    color: #71809a;
+    padding: 30px 10px;
+    font-size: 12px;
+}
+
+/* OYUN */
+
+.game-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 25px;
+    align-items: start;
+    padding: 20px 0 60px;
+}
+
+.machine {
+    background: linear-gradient(145deg, #333b49, #111720 45%, #080b10);
+    border: 2px solid #596575;
+    border-radius: 28px;
+    padding: 25px;
+    box-shadow:
+        inset 0 2px 5px #ffffff22,
+        0 25px 65px #0009;
+    position: relative;
+}
+
+.machine-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    color: #aab7c9;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+.machine-name {
+    color: var(--cyan);
+    font-weight: 800;
+}
+
+.display {
+    background: #020704;
+    border: 5px solid #252d35;
+    border-radius: 12px;
+    padding: 17px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 25px;
+    box-shadow: inset 0 0 20px #000;
+}
+
+.display-item {
+    text-align: center;
+}
+
+.display-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    color: #66806b;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.display-number {
+    font-family: 'Orbitron', sans-serif;
+    color: #55ff83;
+    font-size: clamp(25px, 5vw, 38px);
+    text-shadow: 0 0 12px #55ff83;
+    font-weight: 800;
+}
+
+.game-status {
+    text-align: center;
+    color: #b7c6d9;
+    min-height: 45px;
+    margin-bottom: 17px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.led-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 17px;
+    max-width: 450px;
+    margin: auto;
+}
+
+.color-button {
+    aspect-ratio: 1 / 1;
+    border-radius: 25px;
+    border: 7px solid #242b34;
+    position: relative;
+    opacity: .65;
+    transition: .12s;
+    box-shadow:
+        inset 0 7px 12px #ffffff30,
+        inset 0 -10px 15px #0007,
+        0 8px 0 #080b10,
+        0 12px 18px #0008;
+}
+
+.color-button:before {
+    content: "";
+    position: absolute;
+    top: 10%;
+    left: 15%;
+    width: 35%;
+    height: 12%;
+    background: #ffffff35;
+    border-radius: 50%;
+    filter: blur(3px);
+}
+
+.color-button:active {
+    transform: translateY(5px);
+}
+
+.color-button.red {
+    background: radial-gradient(circle at 35% 25%, #ff8585, #d00020 55%, #650014);
+}
+
+.color-button.yellow {
+    background: radial-gradient(circle at 35% 25%, #fff5a0, #e9b900 55%, #795800);
+}
+
+.color-button.blue {
+    background: radial-gradient(circle at 35% 25%, #9ceaff, #008bdb 55%, #003e79);
+}
+
+.color-button.green {
+    background: radial-gradient(circle at 35% 25%, #aaffb2, #00a83b 55%, #00531b);
+}
+
+.color-button.lit {
+    opacity: 1;
+    filter: brightness(1.7);
+    transform: scale(1.045);
+}
+
+.color-button.red.lit {
+    box-shadow: 0 0 35px #ff153f, 0 0 75px #ff153f99, inset 0 0 20px white;
+}
+
+.color-button.yellow.lit {
+    box-shadow: 0 0 35px #ffe600, 0 0 75px #ffe60099, inset 0 0 20px white;
+}
+
+.color-button.blue.lit {
+    box-shadow: 0 0 35px #00aaff, 0 0 75px #00aaff99, inset 0 0 20px white;
+}
+
+.color-button.green.lit {
+    box-shadow: 0 0 35px #00ff55, 0 0 75px #00ff5599, inset 0 0 20px white;
+}
+
+.machine-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    color: #8290a4;
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+.speaker {
+    display: flex;
+    gap: 4px;
+}
+
+.speaker span {
+    width: 4px;
+    height: 22px;
+    background: #080b10;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 2px #ffffff22;
+}
+
+.side-panel {
+    background: #111a29;
+    border: 1px solid #293850;
+    border-radius: 18px;
+    padding: 22px;
+}
+
+.side-panel h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 15px;
+    margin-bottom: 17px;
+    color: var(--cyan);
+}
+
+.side-panel p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+    margin-bottom: 17px;
+}
+
+.game-btn {
+    width: 100%;
+    padding: 14px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--cyan);
+    color: #061018;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.game-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.reset-btn {
+    background: #273449;
+    color: white;
+}
+
+.note {
+    color: #71809a;
+    font-size: 11px;
+    line-height: 1.6;
+    margin-top: 15px;
+}
+
+/* YENİ ÖZELLİKLER */
+
+.feature-box {
+    background: #0c1422;
+    border: 1px solid #293850;
+    border-radius: 13px;
+    padding: 15px;
+    margin-top: 17px;
+}
+
+.feature-box h4 {
+    color: var(--cyan);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    margin-bottom: 13px;
+}
+
+.feature-select {
+    width: 100%;
+    background: #1b2639;
+    color: white;
+    border: 1px solid #3b4b65;
+    border-radius: 8px;
+    padding: 11px;
+    margin: 8px 0 12px;
+}
+
+.sound-btn {
+    width: 100%;
+    background: #17283b;
+    color: var(--cyan);
+    border: 1px solid #31516a;
+    border-radius: 8px;
+    padding: 11px;
+    font-weight: 700;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+}
+
+.stat-tile {
+    background: #172236;
+    border: 1px solid #2c405b;
+    border-radius: 9px;
+    padding: 12px 7px;
+    text-align: center;
+}
+
+.stat-tile strong {
+    display: block;
+    color: #55ff83;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 23px;
+    margin-bottom: 6px;
+}
+
+.stat-tile span {
+    display: block;
+    color: #9ba6bd;
+    font-size: 9px;
+    line-height: 1.4;
+}
+
+.new-record {
+    color: #ffe600 !important;
+    text-shadow: 0 0 12px #ffe600;
+}
+
+.achievement-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.achievement {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: #172236;
+    border: 1px solid #2c405b;
+    border-radius: 9px;
+    padding: 10px;
+    color: #71809a;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.achievement strong {
+    color: #9ba6bd;
+    font-size: 11px;
+}
+
+.achievement-icon {
+    font-size: 21px;
+}
+
+.achievement.unlocked {
+    border-color: #00e5ff88;
+    background: #00e5ff12;
+    color: #c4d9e9;
+}
+
+.achievement.unlocked strong {
+    color: var(--cyan);
+}
+
+/* HAREKETLİ TEKNOLOJİK ARKA PLAN */
+
+body {
+    position: relative;
+    isolation: isolate;
+}
+
+.background-effects {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: transparent;
+}
+
+.bg-grid {
+    position: absolute;
+    inset: 0;
+    opacity: .16;
+    background-image:
+        linear-gradient(#6b8bb51c 1px, transparent 1px),
+        linear-gradient(90deg, #6b8bb51c 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: linear-gradient(to bottom, black, transparent 90%);
+}
+
+.bg-glow {
+    position: absolute;
+    width: 42vw;
+    height: 42vw;
+    min-width: 280px;
+    min-height: 280px;
+    border-radius: 50%;
+    filter: blur(75px);
+    opacity: .17;
+    animation: glowDrift 18s ease-in-out infinite alternate;
+}
+
+.bg-glow-one {
+    background: #00bfff;
+    top: -18%;
+    left: -12%;
+}
+
+.bg-glow-two {
+    background: #8b45ff;
+    right: -14%;
+    bottom: -20%;
+    animation-delay: -8s;
+}
+
+#particlesCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#mouseGlow {
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    left: var(--mouse-x, 50%);
+    top: var(--mouse-y, 50%);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        #00d9ff16 0%,
+        #8b5cff0b 38%,
+        transparent 70%
+    );
+    opacity: 0;
+    transition: opacity .35s ease;
+}
+
+body.pointer-active #mouseGlow {
+    opacity: 1;
+}
+
+.page {
+    position: relative;
+    z-index: 1;
+}
+
+.creators-grid {
+    margin-top: 35px;
+}
+
+.creator-card {
+    text-align: center;
+    padding: 32px 22px;
+}
+
+.creator-card h3 {
+    font-size: 18px;
+}
+
+.creator-symbol {
+    width: 54px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 18px;
+    border-radius: 16px;
+    color: var(--cyan);
+    font-size: 25px;
+    background: #00e5ff12;
+    border: 1px solid #00e5ff55;
+    box-shadow: 0 0 25px #00e5ff16;
+}
+
+@keyframes glowDrift {
+    from {
+        transform: translate3d(0, 0, 0) scale(.92);
+    }
+    to {
+        transform: translate3d(45px, 35px, 0) scale(1.12);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bg-glow {
+        animation: none;
+    }
+
+    #mouseGlow {
+        display: none;
+    }
+}
+
+@media (max-width: 760px) {
+    .game-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .side-panel {
+        order: -1;
+    }
+
+    .machine {
+        padding: 16px;
+    }
+
+    .color-button {
+        border-width: 5px;
+        border-radius: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- TÜM SAYFALARDA GÖRÜNEN ARKA PLAN EFEKTLERİ -->
+
+<div class="background-effects" aria-hidden="true">
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-one"></div>
+    <div class="bg-glow bg-glow-two"></div>
+    <canvas id="particlesCanvas"></canvas>
+    <div id="mouseGlow"></div>
+</div>
+
+<!-- ANA SAYFA -->
+
+<section id="homePage" class="page active">
+    <div class="container">
+        <header>
+            <button
+                type="button"
+                class="logo"
+                onclick="showPage('homePage')"
+                aria-label="Ana sayfaya dön"
+            >
+                RENKLİ <span>HAFIZA</span>
+            </button>
+        </header>
+
+        <main class="home-content">
+            <div class="tag">ARDUINO NANO PROJESİ</div>
+
+            <h1>RENKLİ <span>HAFIZA</span></h1>
+
+            <p>
+                Renkleri takip et, hafızanı kullan ve seviyeleri geç!
+                Arduino ile geliştirilen Renkli Hafıza projesinin
+                dünyasına hoş geldin.
+            </p>
+
+            <div class="home-buttons">
+                <button
+                    class="main-btn secondary"
+                    onclick="showPage('introPage')"
+                >
+                    PROJEYİ TANIT
+                </button>
+
+                <button
+                    class="main-btn primary"
+                    onclick="showPage('gamePage')"
+                >
+                    OYUNU OYNA
+                </button>
+
+                <button
+                    class="main-btn secondary"
+                    onclick="showPage('creatorsPage')"
+                >
+                    YAPANLAR
+                </button>
+            </div>
+        </main>
+
+        <footer>
+            RENKLİ HAFIZA • ARDUINO NANO PROJECT
+        </footer>
+    </div>
+</section>
+
+<!-- TANITIM SAYFASI -->
+
+<section id="introPage" class="page">
+    <div class="container">
+        <header>
+            <div class="logo">
+                PROJE <span>TANITIMI</span>
+            </div>
+
+            <button
+                class="back-btn"
+                onclick="showPage('homePage')"
+            >
+                ← Ana Sayfa
+            </button>
+        </header>
+
+        <h1 class="section-title">
+            Renkli <span>Hafıza</span> Nedir?
+        </h1>
+
+        <p class="section-description">
+            Renkli Hafıza, oyuncunun ışıklarla gösterilen renk sırasını
+            hafızasında tutarak tekrar etmesini isteyen elektronik bir
+            hafıza oyunudur.
+        </p>
+
+        <div class="info-grid">
+
+            <div class="info-card">
+                <h3>Projenin Ortaya Çıkış Fikri</h3>
+                <p>
+                    Hafıza geliştiren ve eğlenceli bir elektronik oyun
+                    tasarlamak amacıyla ortaya çıkmıştır. Renkler ve
+                    sesler kullanılarak etkileşimli bir oyun oluşturulmuştur.
+                </p>
+            </div>
+
+            <div class="info-card">
+                <h3>Projenin Amacı</h3>
+                <p>
+                    Oyuncuların dikkatini, hafızasını ve sıralama becerisini
+                    geliştirmeye yardımcı olan bir oyun tasarlamaktır.
+                </p>
+            </div>
+
+            <div class="info-card">
+                <h3>Çalışma Prensibi</h3>
+                <p>
+                    Sistem önce bir LED yakar. Oyuncu yanan LED'in
+                    karşılığı olan butona basar. Doğru cevap verilirse
+                    sonraki seviyede renk dizisine yeni bir renk eklenir.
+                </p>
+            </div>
+
+            <div class="info-card">
+                <h3>Hedef Kitle</h3>
+                <p>
+                    Her yaştan bireylerin oynayabileceği, dikkat ve
+                    hafıza becerilerini kullanabilecekleri bir oyundur.
+                </p>
+            </div>
+
+            <div class="info-card">
+                <h3>Kullanılan Elektronik Malzemeler</h3>
+                <ul>
+                    <li>Arduino Nano</li>
+                    <li>4 farklı renkte LED</li>
+                    <li>4 adet buton</li>
+                    <li>Buzzer</li>
+                    <li>7 segment ekran</li>
+                    <li>Ultrasonik sensör</li>
+                    <li>Bağlantı kabloları</li>
+                    <li>Breadboard</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3>Öne Çıkan Özellikler</h3>
+                <p>
+                    Seviye sistemi, renkli ışıklar, sesli geri bildirim
+                    ve oyuncunun ilerlemesini gösteren ekran ile
+                    etkileşimli bir oyun deneyimi sunar.
+                </p>
+            </div>
+
+            <div class="info-card">
+                <h3>Projeye Katkıları</h3>
+                <p>
+                    Hafıza, dikkat, odaklanma ve sıralama becerilerinin
+                    kullanılmasını sağlar. Ayrıca elektronik ve
+                    programlama alanlarında uygulamalı öğrenme sunar.
+                </p>
+            </div>
+
+            <div class="info-card">
+                <h3>Sonuç</h3>
+                <p>
+                    Renkli Hafıza, elektronik bileşenleri eğlenceli bir
+                    oyunla birleştiren, geliştirilebilir ve öğretici
+                    bir projedir.
+                </p>
+            </div>
+
+        </div>
+
+        <footer>
+            RENKLİ HAFIZA • PROJE TANITIMI
+        </footer>
+    </div>
+</section>
+
+<!-- YAPANLAR SAYFASI -->
+
+<section id="creatorsPage" class="page">
+    <div class="container">
+        <header>
+            <button
+                type="button"
+                class="logo"
+                onclick="showPage('homePage')"
+            >
+                RENKLİ <span>HAFIZA</span>
+            </button>
+
+            <button
+                class="back-btn"
+                onclick="showPage('homePage')"
+            >
+                ← Ana Sayfa
+            </button>
+        </header>
+
+        <h1 class="section-title">
+            Projeyi <span>Yapanlar</span>
+        </h1>
+
+        <p class="section-description">
+            Renkli Hafıza projesinde yer alan kişiler ve kurum.
+        </p>
+
+        <div class="info-grid creators-grid">
+
+            <div class="info-card creator-card">
+                <div class="creator-symbol">✦</div>
+                <h3>Furkan AYDIN</h3>
+                <p>Branş: Uçak Elektroniği Öğretmeni</p>
+            </div>
+
+            <div class="info-card creator-card">
+                <div class="creator-symbol">✦</div>
+                <h3>Mehmet Akif TÜRK</h3>
+            </div>
+
+            <div class="info-card creator-card">
+                <div class="creator-symbol">⌂</div>
+                <h3>Samsun Bilim ve Sanat Merkezi</h3>
+            </div>
+
+        </div>
+
+        <footer>
+            RENKLİ HAFIZA • PROJE EKİBİ
+        </footer>
+    </div>
+</section>
+
+<!-- OYUN SAYFASI -->
+
+<section id="gamePage" class="page">
+    <div class="container">
+        <header>
+            <button
+                type="button"
+                class="logo"
+                onclick="showPage('homePage')"
+                aria-label="Ana sayfaya dön"
+            >
+                RENKLİ <span>HAFIZA</span>
+            </button>
+
+            <button
+                class="back-btn"
+                onclick="showPage('homePage')"
+            >
+                ← Ana Sayfa
+            </button>
+        </header>
+
+        <h1 class="section-title">
+            Oyuna <span>Başla!</span>
+        </h1>
+
+        <p class="section-description">
+            Renklerin sırasını ezberle ve aynı sırayla butonlara bas.
+        </p>
+
+        <div class="game-layout">
+
+            <div class="machine">
+                <div class="machine-top">
+                    <span class="machine-name">NANO EDITION</span>
+                    <span>MEMORY SYSTEM</span>
+                </div>
+
+                <div class="display">
+                    <div class="display-item">
+                        <div class="display-label">LEVEL</div>
+                        <div class="display-number" id="levelDisplay">
+                            00
+                        </div>
+                    </div>
+
+                    <div class="display-item">
+                        <div class="display-label">SCORE</div>
+                        <div class="display-number" id="scoreDisplay">
+                            000
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-status" id="status">
+                    Oyuna başlamak için BAŞLAT butonuna bas!
+                </div>
+
+                <div class="led-buttons">
+                    <button
+                        class="color-button red"
+                        onclick="pressColor(0)"
+                        aria-label="Kırmızı"
+                    ></button>
+
+                    <button
+                        class="color-button yellow"
+                        onclick="pressColor(1)"
+                        aria-label="Sarı"
+                    ></button>
+
+                    <button
+                        class="color-button blue"
+                        onclick="pressColor(2)"
+                        aria-label="Mavi"
+                    ></button>
+
+                    <button
+                        class="color-button green"
+                        onclick="pressColor(3)"
+                        aria-label="Yeşil"
+                    ></button>
+                </div>
+
+                <div class="machine-bottom">
+                    <span>ARDUINO NANO</span>
+
+                    <div class="speaker">
+                        <span></span><span></span><span></span>
+                        <span></span><span></span><span></span>
+                        <span></span><span></span>
+                    </div>
+
+                    <span>MEMORY GAME</span>
+                </div>
+            </div>
+
+            <aside class="side-panel">
+                <h3>OYUN KONTROLÜ</h3>
+
+                <p>
+                    Önce BAŞLAT butonuna bas. Renklerin yanmasını izle.
+                    Daha sonra aynı renk sırasını butonlara basarak tekrar et.
+                </p>
+
+                <button
+                    class="game-btn"
+                    id="startBtn"
+                    onclick="startGame()"
+                >
+                    OYUNU BAŞLAT
+                </button>
+
+                <button
+                    class="game-btn reset-btn"
+                    onclick="resetGame()"
+                >
+                    YENİDEN BAŞLAT
+                </button>
+
+                <div class="feature-box">
+                    <h4>OYUN AYARLARI</h4>
+
+                    <label for="difficultySelect" class="note">
+                        Zorluk seviyesi
+                    </label>
+
+                    <select
+                        id="difficultySelect"
+                        class="feature-select"
+                        onchange="changeDifficulty()"
+                    >
+                        <option value="easy">Kolay</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="hard">Zor</option>
+                    </select>
+
+                    <button
+                        class="sound-btn"
+                        id="soundBtn"
+                        onclick="toggleSound()"
+                    >
+                        🔊 Ses: Açık
+                    </button>
+                </div>
+
+                <div class="feature-box">
+                    <h4>🏆 REKOR VE İSTATİSTİKLER</h4>
+
+                    <div class="stats-grid">
+                        <div class="stat-tile">
+                            <strong id="bestLevel">0</strong>
+                            <span>EN YÜKSEK SEVİYE</span>
+                        </div>
+
+                        <div class="stat-tile">
+                            <strong id="gamesPlayed">0</strong>
+                            <span>OYNANAN OYUN</span>
+                        </div>
+
+                        <div class="stat-tile">
+                            <strong id="totalScore">0</strong>
+                            <span>TOPLAM PUAN</span>
+                        </div>
+
+                        <div class="stat-tile">
+                            <strong id="bestScore">0</strong>
+                            <span>EN YÜKSEK PUAN</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature-box">
+                    <h4>🎖️ BAŞARIMLAR</h4>
+                    <div
+                        class="achievement-list"
+                        id="achievementList"
+                    ></div>
+                </div>
+
+                <p class="note">
+                    Bu bölüm, Renkli Hafıza projesinin tarayıcıda çalışan
+                    oyun simülasyonudur. Gerçek Arduino devresine bağlı değildir.
+                </p>
+            </aside>
+
+        </div>
+
+        <footer>
+            RENKLİ HAFIZA • OYUN SİMÜLASYONU
+        </footer>
+    </div>
+</section>
+
+<script>
+
+/* HAREKETLİ PARÇACIK VE BAĞLANTI ÇİZGİSİ ARKA PLANI */
+
+(() => {
+    const canvas = document.getElementById("particlesCanvas");
+    const ctx = canvas?.getContext("2d");
+
+    const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (!canvas || !ctx || reducedMotion) return;
+
+    let width = 0;
+    let height = 0;
+    let particles = [];
+
+    function resizeCanvas() {
+        const dpr = Math.min(
+            window.devicePixelRatio || 1,
+            2
+        );
+
+        width = window.innerWidth;
+        height = window.innerHeight;
+
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        const amount = width < 700
+            ? 24
+            : Math.min(52, Math.floor(width / 25));
+
+        particles = Array.from(
+            { length: amount },
+            () => ({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                vx: (Math.random() - 0.5) * 0.28,
+                vy: (Math.random() - 0.5) * 0.28,
+                radius: Math.random() * 1.7 + 0.7
+            })
+        );
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+
+            p.x += p.vx;
+            p.y += p.vy;
+
+            if (p.x < -10) p.x = width + 10;
+            if (p.x > width + 10) p.x = -10;
+            if (p.y < -10) p.y = height + 10;
+            if (p.y > height + 10) p.y = -10;
+
+            ctx.beginPath();
+            ctx.arc(
+                p.x,
+                p.y,
+                p.radius,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fillStyle = "rgba(112, 213, 255, 0.58)";
+            ctx.fill();
+
+            for (let j = i + 1; j < particles.length; j++) {
+                const q = particles[j];
+
+                const dx = p.x - q.x;
+                const dy = p.y - q.y;
+                const distance = Math.hypot(dx, dy);
+
+                if (distance < 115) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(q.x, q.y);
+
+                    ctx.strokeStyle =
+                        `rgba(91, 167, 255, ${
+                            0.13 * (1 - distance / 115)
+                        })`;
+
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener(
+        "resize",
+        resizeCanvas,
+        { passive: true }
+    );
+
+    window.addEventListener(
+        "pointermove",
+        event => {
+            document.documentElement.style.setProperty(
+                "--mouse-x",
+                `${event.clientX}px`
+            );
+
+            document.documentElement.style.setProperty(
+                "--mouse-y",
+                `${event.clientY}px`
+            );
+
+            document.body.classList.add("pointer-active");
+        },
+        { passive: true }
+    );
+
+    resizeCanvas();
+    animate();
+})();
+
+
+/* SAYFA GEÇİŞLERİ */
+
+function showPage(pageId) {
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active");
+    });
+
+    document.getElementById(pageId).classList.add("active");
+}
+
+
+/* SES SİSTEMİ */
+
+let audioContext = null;
+
+// Tarayıcının ses sistemini başlat.
+function startAudio() {
+    if (!audioContext) {
+        const AudioContextClass =
+            window.AudioContext || window.webkitAudioContext;
+
+        if (AudioContextClass) {
+            audioContext = new AudioContextClass();
+        }
+    }
+
+    if (
+        audioContext &&
+        audioContext.state === "suspended"
+    ) {
+        audioContext.resume();
+    }
+}
+
+// Özgün 8-bit ses oluştur.
+function playTone(
+    frequency,
+    duration,
+    type = "square",
+    volume = 0.07
+) {
+    if (!audioContext || !soundEnabled) return;
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    const now = audioContext.currentTime;
+
+    oscillator.type = type;
+
+    oscillator.frequency.setValueAtTime(
+        frequency,
+        now
+    );
+
+    gain.gain.setValueAtTime(volume, now);
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        now + duration
+    );
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    oscillator.start(now);
+    oscillator.stop(now + duration);
+}
+
+// Doğru cevap sesi.
+function correctSound() {
+    playTone(988, 0.09);
+
+    setTimeout(() => {
+        playTone(1318, 0.09);
+    }, 90);
+
+    setTimeout(() => {
+        playTone(1568, 0.16);
+    }, 180);
+}
+
+// Yanlış cevap sesi.
+function wrongSound() {
+    playTone(500, 0.15);
+
+    setTimeout(() => {
+        playTone(400, 0.18);
+    }, 160);
+
+    setTimeout(() => {
+        playTone(300, 0.35);
+    }, 350);
+}
+
+
+/* OYUN DEĞİŞKENLERİ */
+
+const colors = [
+    "red",
+    "yellow",
+    "blue",
+    "green"
+];
+
+let sequence = [];
+let playerStep = 0;
+let level = 0;
+let score = 0;
+
+let acceptingInput = false;
+let gameRunning = false;
+
+let soundEnabled =
+    localStorage.getItem("rh_sound") !== "false";
+
+let difficulty =
+    localStorage.getItem("rh_difficulty") || "normal";
+
+let gameCounted = false;
+let isNewRecord = false;
+
+
+// Tarayıcıda saklanan kalıcı istatistikler.
+
+let savedStats =
+    JSON.parse(localStorage.getItem("rh_stats") || "null") || {
+        bestLevel: 0,
+        gamesPlayed: 0,
+        totalScore: 0,
+        bestScore: 0,
+        achievements: []
+    };
+
+
+/* BAŞARIMLAR */
+
+const achievements = [
+    {
+        id: "first",
+        icon: "🎮",
+        name: "İlk Adım",
+        description: "İlk oyununu tamamla."
+    },
+    {
+        id: "level5",
+        icon: "⭐",
+        name: "Dikkatli Oyuncu",
+        description: "5. seviyeye ulaş."
+    },
+    {
+        id: "level10",
+        icon: "🔥",
+        name: "Hafıza Ustası",
+        description: "10. seviyeye ulaş."
+    },
+    {
+        id: "record",
+        icon: "🏆",
+        name: "Rekor Kırıcı",
+        description: "Kişisel rekorunu yenile."
+    },
+    {
+        id: "games10",
+        icon: "🎯",
+        name: "Azimli Oyuncu",
+        description: "10 oyun oyna."
+    }
+];
+
+
+/* HTML ELEMANLARI */
+
+const buttons = document.querySelectorAll(".color-button");
+
+const statusText =
+    document.getElementById("status");
+
+const levelDisplay =
+    document.getElementById("levelDisplay");
+
+const scoreDisplay =
+    document.getElementById("scoreDisplay");
+
+const startButton =
+    document.getElementById("startBtn");
+
+const soundButton =
+    document.getElementById("soundBtn");
+
+const difficultySelect =
+    document.getElementById("difficultySelect");
+
+
+/* İSTATİSTİKLER */
+
+function saveStats() {
+    localStorage.setItem(
+        "rh_stats",
+        JSON.stringify(savedStats)
+    );
+
+    updateStatsDisplay();
+}
+
+function updateStatsDisplay() {
+    document.getElementById("bestLevel").textContent =
+        savedStats.bestLevel;
+
+    document.getElementById("gamesPlayed").textContent =
+        savedStats.gamesPlayed;
+
+    document.getElementById("totalScore").textContent =
+        savedStats.totalScore;
+
+    document.getElementById("bestScore").textContent =
+        savedStats.bestScore;
+
+    const list =
+        document.getElementById("achievementList");
+
+    list.innerHTML = achievements.map(item => {
+        const unlocked =
+            savedStats.achievements.includes(item.id);
+
+        return `
+            <div class="achievement ${
+                unlocked ? "unlocked" : ""
+            }">
+                <span class="achievement-icon">
+                    ${item.icon}
+                </span>
+
+                <span>
+                    <strong>${item.name}</strong><br>
+                    ${item.description}
+                </span>
+
+                <span>
+                    ${unlocked ? "✓" : "🔒"}
+                </span>
+            </div>
+        `;
+    }).join("");
+}
+
+
+/* BAŞARIM AÇMA */
+
+function unlockAchievement(id) {
+    if (!savedStats.achievements.includes(id)) {
+        savedStats.achievements.push(id);
+
+        const item =
+            achievements.find(a => a.id === id);
+
+        if (item) {
+            statusText.textContent =
+                `🎖️ Yeni başarım: ${item.name}!`;
+        }
+    }
+}
+
+
+// Başarımları kontrol et.
+
+function checkAchievements() {
+    if (savedStats.gamesPlayed >= 1) {
+        unlockAchievement("first");
+    }
+
+    if (savedStats.bestLevel >= 5) {
+        unlockAchievement("level5");
+    }
+
+    if (savedStats.bestLevel >= 10) {
+        unlockAchievement("level10");
+    }
+
+    if (isNewRecord && savedStats.bestLevel > 0) {
+        unlockAchievement("record");
+    }
+
+    if (savedStats.gamesPlayed >= 10) {
+        unlockAchievement("games10");
+    }
+
+    saveStats();
+}
+
+
+/* SES AYARLARI */
+
+function updateSoundButton() {
+    soundButton.textContent = soundEnabled
+        ? "🔊 Ses: Açık"
+        : "🔇 Ses: Kapalı";
+}
+
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+
+    localStorage.setItem(
+        "rh_sound",
+        String(soundEnabled)
+    );
+
+    updateSoundButton();
+
+    if (soundEnabled) {
+        startAudio();
+        playTone(880, 0.1);
+    }
+}
+
+
+/* ZORLUK AYARLARI */
+
+function changeDifficulty() {
+    difficulty = difficultySelect.value;
+
+    localStorage.setItem(
+        "rh_difficulty",
+        difficulty
+    );
+
+    if (!gameRunning) {
+        const names = {
+            easy: "Kolay",
+            normal: "Normal",
+            hard: "Zor"
+        };
+
+        statusText.textContent =
+            `Zorluk: ${names[difficulty]}. Oyuna hazır!`;
+    }
+}
+
+
+// Oyun hızını ayarla.
+
+function getGameSpeed() {
+    return difficulty === "easy"
+        ? 700
+        : difficulty === "hard"
+        ? 280
+        : 450;
+}
+
+
+// İlk açılışta kayıtlı tercihleri göster.
+
+function initializeExtras() {
+    difficultySelect.value = difficulty;
+
+    updateSoundButton();
+    updateStatsDisplay();
+}
+
+
+/* LED YAKMA */
+
+function lightColor(index, duration = 450) {
+    return new Promise(resolve => {
+        buttons[index].classList.add("lit");
+
+        setTimeout(() => {
+            buttons[index].classList.remove("lit");
+            resolve();
+        }, duration);
+    });
+}
+
+
+/* RENK SIRASINI GÖSTER */
+
+async function showSequence() {
+    acceptingInput = false;
+
+    statusText.textContent =
+        "Renkleri dikkatlice izle!";
+
+    await new Promise(resolve => {
+        setTimeout(resolve, 600);
+    });
+
+    for (let i = 0; i < sequence.length; i++) {
+        await lightColor(
+            sequence[i],
+            getGameSpeed()
+        );
+
+        await new Promise(resolve => {
+            setTimeout(
+                resolve,
+                difficulty === "easy"
+                    ? 350
+                    : difficulty === "hard"
+                    ? 110
+                    : 220
+            );
+        });
+    }
+
+    statusText.textContent =
+        "Şimdi aynı sırayla butonlara bas!";
+
+    acceptingInput = true;
+}
+
+
+/* YENİ SEVİYE */
+
+function nextLevel() {
+    if (!gameRunning) return;
+
+    level++;
+    playerStep = 0;
+
+    levelDisplay.textContent =
+        String(level).padStart(2, "0");
+
+    // Ulaşılan en yüksek seviyeyi kaydet.
+
+    if (level > savedStats.bestLevel) {
+        savedStats.bestLevel = level;
+        isNewRecord = true;
+
+        document.getElementById("bestLevel").textContent =
+            level;
+
+        document.getElementById("bestLevel")
+            .classList.add("new-record");
+    }
+
+    if (level >= 5) {
+        unlockAchievement("level5");
+    }
+
+    if (level >= 10) {
+        unlockAchievement("level10");
+    }
+
+    saveStats();
+
+    const randomColor =
+        Math.floor(Math.random() * 4);
+
+    sequence.push(randomColor);
+
+    showSequence();
+}
+
+
+/* OYUNU BAŞLAT */
+
+function startGame() {
+    startAudio();
+
+    sequence = [];
+    playerStep = 0;
+    level = 0;
+    score = 0;
+
+    isNewRecord = false;
+    gameCounted = false;
+
+    document.getElementById("bestLevel")
+        .classList.remove("new-record");
+
+    savedStats.gamesPlayed++;
+
+    saveStats();
+
+    gameRunning = true;
+    acceptingInput = false;
+
+    levelDisplay.textContent = "00";
+    scoreDisplay.textContent = "000";
+
+    startButton.disabled = true;
+
+    statusText.textContent =
+        "Oyun hazırlanıyor...";
+
+    setTimeout(() => {
+        nextLevel();
+    }, 500);
+}
+
+
+/* OYUNCU BUTONA BASTIĞINDA */
+
+async function pressColor(index) {
+    if (!gameRunning || !acceptingInput) return;
+
+    // Butonun ışığını kısa süre yak.
+
+    lightColor(index, 180);
+
+    // Doğru renk kontrolü.
+
+    if (index === sequence[playerStep]) {
+
+        // Doğru cevap sesi.
+
+        correctSound();
+
+        score += 10;
+
+        scoreDisplay.textContent =
+            String(score).padStart(3, "0");
+
+        playerStep++;
+
+        // Bu seviyedeki bütün renkler doğru bilindiyse.
+
+        if (playerStep === sequence.length) {
+            acceptingInput = false;
+
+            statusText.textContent =
+                "HARİKA! Sonraki seviyeye geçiyorsun.";
+
+            await new Promise(resolve => {
+                setTimeout(resolve, 1000);
+            });
+
+            nextLevel();
+        }
+
+    } else {
+
+        // Yanlış cevap sesi.
+
+        wrongSound();
+
+        gameOver();
+    }
+}
+
+
+/* OYUN BİTİŞİ */
+
+function gameOver() {
+    gameRunning = false;
+    acceptingInput = false;
+
+    // Her oyun yalnızca bir kez toplam puana eklenir.
+
+    if (!gameCounted) {
+        savedStats.totalScore += score;
+
+        savedStats.bestScore = Math.max(
+            savedStats.bestScore,
+            score
+        );
+
+        gameCounted = true;
+    }
+
+    checkAchievements();
+
+    statusText.textContent = isNewRecord
+        ? `🏆 YENİ REKOR! Ulaştığın seviye: ${level} | Puan: ${score}`
+        : `OYUN BİTTİ! Ulaştığın seviye: ${level} | Puan: ${score}`;
+
+    startButton.disabled = false;
+    startButton.textContent = "TEKRAR OYNA";
+}
+
+
+/* OYUNU SIFIRLA */
+
+function resetGame() {
+    gameRunning = false;
+    acceptingInput = false;
+
+    sequence = [];
+    playerStep = 0;
+    level = 0;
+    score = 0;
+
+    levelDisplay.textContent = "00";
+    scoreDisplay.textContent = "000";
+
+    statusText.textContent =
+        "Oyun sıfırlandı. Başlamak için BAŞLAT butonuna bas!";
+
+    buttons.forEach(button => {
+        button.classList.remove("lit");
+    });
+
+    startButton.disabled = false;
+    startButton.textContent = "OYUNU BAŞLAT";
+
+    document.getElementById("bestLevel")
+        .classList.remove("new-record");
+}
+
+
+// Sayfa yüklenince kayıtlı rekor, istatistik ve ayarları getir.
+
+initializeExtras();
+
+</script>
+
+</body>
+</html>
